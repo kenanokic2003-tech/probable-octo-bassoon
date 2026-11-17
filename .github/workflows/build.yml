@@ -22,11 +22,26 @@ jobs:
           mkdir project
           unzip -q KENO_Online_Prototype.zip -d project
 
+      
+
       - name: Fix Java and Kotlin compatibility
         run: |
-          sed -i 's/VERSION_1_8/VERSION_17/g' project/app/build.gradle.kts
-          echo "Checking compatibility:"
-          grep -n "VERSION_" project/app/build.gradle.kts || true
+          python3 - <<'PY'
+          from pathlib import Path
+
+          for p in Path("project").rglob("*"):
+              if p.is_file() and (p.name.endswith(".gradle") or p.name.endswith(".gradle.kts")):
+                  s = p.read_text()
+                  s = s.replace("VERSION_1_8", "VERSION_17")
+                  s = s.replace('"1.8"', '"17"')
+                  s = s.replace("'1.8'", "'17'")
+                  p.write_text(s)
+
+                  print(f"Checking {p}:")
+                  for line in s.splitlines():
+                      if any(x in line for x in ("sourceCompatibility", "targetCompatibility", "jvmTarget")):
+                          print(line.strip())
+          PY
 
       - name: Set up Java
         uses: actions/setup-java@v4
