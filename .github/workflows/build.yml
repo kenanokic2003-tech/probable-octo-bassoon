@@ -20,7 +20,7 @@ jobs:
       - name: Extract KENO
         run: |
           mkdir project
-          unzip KENO_Online_Prototype.zip -d project
+          unzip -q KENO_Online_Prototype.zip -d project
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -29,7 +29,12 @@ jobs:
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+
+      - name: Install Android platform
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -38,11 +43,10 @@ jobs:
 
       - name: Build APK
         working-directory: project
-        run: gradle assembleDebug
+        run: gradle --stacktrace assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KENO-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
-
