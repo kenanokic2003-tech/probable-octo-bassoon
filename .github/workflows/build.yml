@@ -1,3 +1,4 @@
+
 name: Build KENO APK
 
 on:
@@ -13,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract KENO project
+      - name: Extract KENO
         run: |
           mkdir project
           unzip KENO_Online_Prototype.zip -d project
@@ -26,6 +27,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -41,3 +45,4 @@ jobs:
         with:
           name: KENO-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
+
