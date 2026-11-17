@@ -22,6 +22,12 @@ jobs:
           mkdir project
           unzip -q KENO_Online_Prototype.zip -d project
 
+      - name: Fix Java and Kotlin compatibility
+        run: |
+          sed -i 's/VERSION_1_8/VERSION_17/g' project/app/build.gradle.kts
+          echo "Checking compatibility:"
+          grep -n "VERSION_" project/app/build.gradle.kts || true
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
